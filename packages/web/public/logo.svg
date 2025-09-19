@@ -1,0 +1,22 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Beyaz arka plan -->
+  <rect width="512" height="512" rx="64" fill="#ffffff"/>
+  
+  <!-- Hafif gölge efekti için kenar -->
+  <rect width="512" height="512" rx="64" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+  
+  <!-- SolarVeyo yazısı - tam ortada -->
+  <text x="256" y="256" font-family="Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle" dominant-baseline="middle">
+    <tspan fill="#000000">Solar</tspan><tspan fill="#1976d2">Veyo</tspan>
+  </text>
+  
+  <!-- SCADA alt yazısı - siyah -->
+  <text x="256" y="310" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#000000" text-anchor="middle" dominant-baseline="middle">
+    SCADA
+  </text>
+  
+  <!-- Monitoring System - gri -->
+  <text x="256" y="340" font-family="Arial, sans-serif" font-size="18" fill="#666666" text-anchor="middle" dominant-baseline="middle">
+    Monitoring System
+  </text>
+</svg>

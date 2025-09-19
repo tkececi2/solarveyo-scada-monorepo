@@ -1,0 +1,27 @@
+{
+  "name": "solarveyo-app",
+  "version": "1.0.0",
+  "description": "SolarVeyo - Monorepo for Web and Mobile Apps",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "web:dev": "npm run dev --workspace=packages/web",
+    "web:build": "npm run build --workspace=packages/web",
+    "mobile:start": "npm run start --workspace=packages/mobile",
+    "mobile:android": "npm run android --workspace=packages/mobile",
+    "mobile:ios": "npm run ios --workspace=packages/mobile",
+    "shared:build": "npm run build --workspace=packages/shared",
+    "install:all": "npm install && npm run install:mobile",
+    "install:mobile": "cd packages/mobile && npm install"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "eslint": "^8.57.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

@@ -1,0 +1,190 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function getUserRole() {
+      return getUserData().role;
+    }
+    
+    // Admin check - supports both old and new system
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    // Manager check - admin or manager
+    function isManager() {
+      return isAuthenticated() && (getUserRole() == 'admin' || getUserRole() == 'manager');
+    }
+    
+    // Customer check (for old system compatibility)
+    function isCustomer() {
+      return isAuthenticated() && getUserRole() == 'customer';
+    }
+    
+    // Viewer check
+    function isViewer() {
+      return isAuthenticated() && getUserRole() == 'viewer';
+    }
+    
+    function isOwnerOrAdmin(userId) {
+      return isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+    
+    function isValidRole(role) {
+      return role == 'admin' || role == 'customer' || role == 'manager' || role == 'viewer';
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == userId && isValidRole(request.resource.data.role);
+      allow update: if isOwnerOrAdmin(userId);
+      allow delete: if isAdmin();
+    }
+    
+    // Team members collection
+    match /team_members/{memberId} {
+      allow read: if isAuthenticated();
+      allow create: if isManager();
+      allow update: if isManager();
+      allow delete: if isManager();
+    }
+    
+    // Site assignments
+    match /site_assignments/{assignmentId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isManager();
+    }
+    
+    // Sites collection
+    match /sites/{siteId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+    
+    // Assignments (old system compatibility)
+    match /assignments/{assignmentId} {
+      allow read: if isAdmin() || (isCustomer() && resource.data.customerId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Daily production
+    match /daily_production/{documentId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+    
+    // PV String states
+    match /pv_string_states/{stateId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.modifiedBy == request.auth.uid;
+      allow update: if isAuthenticated() && request.resource.data.modifiedBy == request.auth.uid;
+      allow delete: if isAuthenticated();
+    }
+    
+    // System alerts
+    match /system_alerts/{alertId} {
+      allow read: if isAuthenticated();
+      allow create, delete: if isAuthenticated();
+      allow update: if isAuthenticated();
+    }
+    
+    // Reports
+    match /reports/{reportId} {
+      allow read: if isAuthenticated();
+      allow write: if isManager();
+    }
+    
+    // Settings
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    // Logs
+    match /logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+    }
+    
+    // All Voyag collections
+    match /Voyag_1/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_2/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_3/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_4/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_5/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_6/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_7/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_8/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_9/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_10_1/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /Voyag_10_2/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // All arazi_ges collections
+    match /centurion_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /mra_1_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /mra_2_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_11_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_12_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_13_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_14_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_15_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_16_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_17_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+    match /voyag_18_arazi_ges_Inverters/{documentId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

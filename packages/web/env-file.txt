@@ -1,0 +1,11 @@
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=AIzaSyCNWtgvSIKr8FMivtcd17LTbIo-Ml9s1wY
+VITE_FIREBASE_AUTH_DOMAIN=tkececi-b86ba.firebaseapp.com
+VITE_FIREBASE_DATABASE_URL=https://tkececi-b86ba-default-rtdb.europe-west1.firebasedatabase.app
+VITE_FIREBASE_PROJECT_ID=tkececi-b86ba
+VITE_FIREBASE_STORAGE_BUCKET=tkececi-b86ba.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=788376105072
+VITE_FIREBASE_APP_ID=1:788376105072:web:eab51a0b1c25b0792f04b5
+
+# Development/Production Environment
+NODE_ENV=production

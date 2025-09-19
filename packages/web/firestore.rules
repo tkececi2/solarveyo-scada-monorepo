@@ -1,0 +1,266 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function getUserRole() {
+      return getUserData().role;
+    }
+    
+    // Roles
+    function isAdmin() { return isAuthenticated() && getUserRole() == 'admin'; }
+    function isManager() { return isAuthenticated() && (getUserRole() == 'admin' || getUserRole() == 'manager'); }
+    function isCustomer() { return isAuthenticated() && getUserRole() == 'customer'; }
+    function isViewer() { return isAuthenticated() && getUserRole() == 'viewer'; }
+    
+    function canAccessSite(siteId) {
+      let userData = getUserData();
+      return isManager() || 
+        (isViewer() && 
+         'assignedSites' in userData && 
+         userData.assignedSites is list && 
+         userData.assignedSites.hasAny([siteId]));
+    }
+    
+    function isOwnerOrAdmin(userId) {
+      return isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+    
+    function isValidRole(role) {
+      return role == 'admin' || role == 'customer' || role == 'manager' || role == 'viewer';
+    }
+    
+    // Users
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      // Kullanıcı kendisi veya admin oluşturabilir
+      allow create: if isAuthenticated() && (request.auth.uid == userId || isAdmin()) && isValidRole(request.resource.data.role);
+      allow update: if isOwnerOrAdmin(userId);
+      allow delete: if isAdmin();
+    }
+    
+    // Team members
+    match /team_members/{memberId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isManager();
+    }
+    
+    // Site assignments
+    match /site_assignments/{assignmentId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isManager();
+    }
+    
+    // Sites - saha erişim kontrolü ile
+    match /sites/{siteId} {
+      allow read: if canAccessSite(siteId);
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+    
+    // Assignments (legacy)
+    match /assignments/{assignmentId} {
+      allow read: if isAdmin() || (isCustomer() && resource.data.customerId == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Daily production
+    match /daily_production/{documentId} {
+      allow read: if isAuthenticated();
+      // Yalnızca yetkili roller yazabilir
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+    
+    // PV String states
+    match /pv_string_states/{stateId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && request.resource.data.modifiedBy == request.auth.uid;
+      allow delete: if isAuthenticated();
+    }
+    
+    // System alerts
+    match /system_alerts/{alertId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+    
+    // Reports
+    match /reports/{reportId} {
+      allow read: if isAuthenticated();
+      allow write: if isManager();
+    }
+    
+    // Settings
+    match /settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    // Logs
+    match /logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+    }
+    
+    // Production estimates - sadece yöneticiler
+    match /production_estimates/{estimateId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isManager();
+      allow delete: if isAdmin();
+    }
+    
+    // FUSION System Data Collections (Voyag series) - Optimized
+    match /Voyag_1/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_2/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_3/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_4/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_5/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_6/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_7/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_8/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_9/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_10_1/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /Voyag_10_2/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+
+    // SANGROW System Data Collections (Arazi GES series) - Optimized
+    match /centurion_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /mra_1_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /mra_2_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_11_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_12_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_13_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_14_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_15_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_16_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_17_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    match /voyag_18_arazi_ges_Inverters/{documentId} { 
+      allow read: if isAuthenticated(); 
+      allow write: if isManager(); 
+    }
+    
+    // Additional SCADA Data Collections
+    match /Fusion-gunluk-enerji/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if isManager();
+    }
+    match /fusionsolar-stations/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if isManager();
+    }
+    match /station-devices/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if isManager();
+    }
+    match /Tum-Sahalar-Verileri/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if isManager();
+    }
+    
+    // Notification Settings - SADECE ADMIN/MANAGER YÖNETEBİLİR
+    match /notificationSettings/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId || // Kullanıcı kendi ayarlarını okuyabilir
+        isManager() // Manager/Admin tüm ayarları okuyabilir
+      );
+      allow write: if isManager(); // SADECE MANAGER/ADMIN DEĞİŞTİREBİLİR
+    }
+    
+    // Notification Alerts - site bazlı izolasyon ile
+    match /notificationAlerts/{alertId} {
+      // Okuma: Kullanıcı kendi bildirimlerini VE erişim yetkisi olan sitelerin bildirimlerini görebilir
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.userId || 
+        (isManager() && true) || // Manager tüm bildirimleri görebilir
+        (isViewer() && canAccessSite(resource.data.siteId)) // Viewer sadece yetkili olduğu siteleri görebilir
+      );
+      
+      // Oluşturma: Sadece sistem (manager/admin) veya kullanıcı kendi adına oluşturabilir
+      allow create: if isAuthenticated() && (
+        isManager() || // Manager/Admin her site için oluşturabilir
+        (request.auth.uid == request.resource.data.userId && 
+         canAccessSite(request.resource.data.siteId)) // Kullanıcı sadece yetkili olduğu siteler için
+      );
+      
+      // Güncelleme: Sadece bildirim sahibi veya manager
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.userId || 
+        isManager()
+      );
+      
+      // Silme: Sadece manager/admin
+      allow delete: if isManager();
+    }
+  }
+}

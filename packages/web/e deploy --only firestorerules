@@ -1,0 +1,5 @@
+[33m9c80587[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m refactor: major system improvements and optimizations
+[33m947a128[m feat: security improvements and system optimizations
+[33mf32fe0e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Ionic configuration added
+[33m5395f8c[m Codemagic kaldırıldı - iOS için alternatif çözüm aranacak
+[33m31ed466[m Add export-method app-store to ios_app_store workflow
