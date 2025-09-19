@@ -1,0 +1,40 @@
+{
+  "name": "solarveyo-app",
+  "version": "1.0.0",
+  "description": "SolarVeyo SCADA - Monorepo for Web and Mobile Apps",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "web:dev": "npm run dev --workspace=packages/web",
+    "web:build": "npm run build --workspace=packages/web",
+    "web:preview": "npm run preview --workspace=packages/web",
+    "mobile:start": "npm run start --workspace=packages/mobile",
+    "mobile:android": "npm run android --workspace=packages/mobile",
+    "mobile:ios": "npm run ios --workspace=packages/mobile",
+    "shared:build": "npm run build --workspace=packages/shared",
+    "install:all": "npm install && npm run install:mobile",
+    "install:mobile": "cd packages/mobile && npm install",
+    "clean": "rm -rf node_modules packages/*/node_modules",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "eslint": "^8.57.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tkececi2/solarveyo-scada-monorepo.git"
+  },
+  "author": "SolarVeyo Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tkececi2/solarveyo-scada-monorepo/issues"
+  },
+  "homepage": "https://github.com/tkececi2/solarveyo-scada-monorepo#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
